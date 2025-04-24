@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BinanceAPI.Models;
 using BinanceAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BinanceAPI.Controllers;
 
@@ -23,6 +24,7 @@ public class BinanceController : ControllerBase
     }
 
     [HttpPost("post-ad")]
+    [Authorize]
     public async Task<IActionResult> PostAd([FromBody] AdPublishRequest request)
     {
         if (!ModelState.IsValid)
