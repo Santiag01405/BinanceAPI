@@ -1,6 +1,6 @@
 ﻿using BinanceAPI.Configurations;
 using BinanceAPI.Models;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,14 +12,19 @@ public class AuthService
 {
     private readonly JwtSettings _jwtSettings;
 
-    public AuthService(IOptions<JwtSettings> options)
+    public AuthService(IConfiguration configuration)
     {
-        _jwtSettings = options.Value;
+        _jwtSettings = new JwtSettings
+        {
+            SecretKey = configuration["Jwt:SecretKey"] ?? throw new Exception("Jwt:SecretKey missing"),
+            Issuer = configuration["Jwt:Issuer"] ?? throw new Exception("Jwt:Issuer missing"),
+            Audience = configuration["Jwt:Audience"] ?? throw new Exception("Jwt:Audience missing"),
+            ExpiryMinutes = int.Parse(configuration["Jwt:ExpiryMinutes"] ?? "60")
+        };
     }
 
     public LoginResponse Authenticate(string email, string password)
     {
-        // Simulación hardcoded de login
         if (email != "admin@example.com" || password != "123456")
             throw new UnauthorizedAccessException("Invalid credentials");
 
